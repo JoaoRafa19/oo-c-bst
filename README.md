@@ -7,6 +7,13 @@ Este projeto foi desenvolvido para a disciplina de Estrutura de Dados II, do cur
 
 O objetivo do projeto é implementar uma árvore binária de busca (BST) com pseudo orientação a objetos, utilizando a linguagem de programação C.
 
+## Execução
+
+``` bash
+    gcc arvore.h arvore.c main.c
+    ./a.out
+```
+
 ## Definição da estrutura
 
 ### Tipos Abstratos
