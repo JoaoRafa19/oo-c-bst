@@ -19,7 +19,7 @@ struct no {
 struct arvore {
     No *_raiz;
     void(*insere)(Arvore* , int );
-    bool(*busca)(Arvore* , int );
+    bool(*busca)(Arvore* , int , No* );
     void(*remove)(Arvore* , int );
     void(*imprime)(Arvore* );
 };

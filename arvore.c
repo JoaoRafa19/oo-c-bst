@@ -116,7 +116,7 @@ void printTree(Arvore* arv){
 }
 
 
-bool busca(Arvore *arv, int info){
+bool busca(Arvore *arv, int info, No* resultado){
     return true;
 }
 
