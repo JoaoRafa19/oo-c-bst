@@ -32,13 +32,7 @@ void insere(Arvore * arv, int info){
     (* arv)._raiz = _insere(arv->_raiz, info);
 }
 
-No* _remove(No* root, int info){
-    return root;
-}
-void removeNode(Arvore*arv, int info){
-    arv->_raiz = _remove(arv->_raiz, info);
-    
-}
+
  void printNormal(No* root){
     if(root == NULL) return;
     printNormal(root->esq);
@@ -141,6 +135,54 @@ bool busca(Arvore *arv, int info, No** resultado){
         }
     }
 }
+
+bool ehFolha(No* node){
+    return node->esq == NULL && node->dir == NULL;
+}
+
+void antecessor(No* q, No** r){
+   No* aux;
+   if( (*r)->dir != NULL){
+    antecessor(q, &(*r)->dir);
+    return;
+   }
+   q->info = (*r)->info;
+   aux = *r;
+   *r = (*r)->esq;
+   free(aux);
+
+}
+
+No* _remove(No* root, int info){
+    if (root == NULL ){
+        return NULL;
+    }
+
+    else {
+        if (info < root -> info){
+            root->esq = _remove(root->esq, info);
+        }else if(info > root->info){
+            root->dir = _remove(root->dir, info);
+        }
+
+        //substituicao
+
+        if( root -> dir == NULL && root->esq != NULL){
+            root = root->esq;
+        }if( root -> dir != NULL && root->esq != NULL){
+            antecessor(root, &root->esq );
+        }
+        if(root->esq == NULL && root ->dir != NULL){
+            root = root->dir;
+        }
+    }
+
+    return root;
+}
+void removeNode(Arvore*arv, int info){
+    arv->_raiz = _remove(arv->_raiz, info);
+}
+
 
 //* Deve ser a ultima função declarada
 // no arquivo .c
