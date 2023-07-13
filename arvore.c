@@ -115,9 +115,31 @@ void printTree(Arvore* arv){
     TreePrinter(arv->_raiz);
 }
 
+bool _buscaInterno(No* root, int info, No** result){
+    if(root == NULL) return false;
 
-bool busca(Arvore *arv, int info, No* resultado){
-    return true;
+    if (info == root->info){
+        *result = root;
+        return true;
+    }
+    else {
+        return _buscaInterno( info < root->info ? root->esq : root->dir, info, result);
+    }
+}
+
+bool busca(Arvore *arv, int info, No** resultado){
+    if( arv == NULL){
+        resultado = NULL;
+        return false;
+    }
+    else {
+        if (arv->_raiz != NULL){
+            *resultado = (No* ) malloc(sizeof(No));
+            return _buscaInterno(arv->_raiz, info, resultado);
+        } else {
+            return false;
+        }
+    }
 }
 
 //* Deve ser a ultima função declarada
