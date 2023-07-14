@@ -57,7 +57,7 @@ void insere(Arvore *arv, int info)
  * @brief Método de calculo do número de colunas na matriz
  * para impressão da arvore
  * @param h altura da arvore
-*/
+ */
 int getcol(int h)
 {
     if (h == 1)
@@ -104,12 +104,12 @@ void TreePrinter(No *tree)
     // aloca o vetor de ponteiros para vetores
     int **M = (int **)calloc(h, sizeof(int *));
 
-    //preenche o vetor(matriz) com vetores dinamicamente alocados
+    // preenche o vetor(matriz) com vetores dinamicamente alocados
     for (int i = 0; i < h; i++)
     {
         M[i] = (int *)calloc(col, sizeof(int)); // new int[col];
     }
-    //preenche a matrix com os valores da arvore
+    // preenche a matrix com os valores da arvore
     internalPrint(M, tree, col / 2, 0, h);
 
     // percore a matriz imprimindo os valores
@@ -239,17 +239,25 @@ No *_remove(No *root, int info)
 
         // substituicao
 
-        if (root->dir == NULL && root->esq != NULL)
+        if (info == root->info)
         {
-            root = root->esq;
-        }
-        if (root->dir != NULL && root->esq != NULL)
-        {
-            antecessor(root, &root->esq);
-        }
-        if (root->esq == NULL && root->dir != NULL)
-        {
-            root = root->dir;
+            if (ehFolha(root))
+            {
+                free(root);
+                return NULL;
+            }
+            if (root->dir == NULL && root->esq != NULL)
+            {
+                root = root->esq;
+            }
+            if (root->dir != NULL && root->esq != NULL)
+            {
+                antecessor(root, &root->esq);
+            }
+            if (root->esq == NULL && root->dir != NULL)
+            {
+                root = root->dir;
+            }
         }
     }
 

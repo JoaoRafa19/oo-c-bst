@@ -27,7 +27,10 @@ int main()
 
     
     printf("\n\n\n\n");
-    arv->remove(arv, 20);
+    arv->remove(arv, 24);
+    arv->imprime(arv);
+    printf("\n\n\n\n");
+    arv->remove(arv, 26);
     arv->imprime(arv);
 
 }
