@@ -82,6 +82,7 @@ As funções relacioadas a estrutura são atribuidos no arquivo `arvore.c`, onde
 ``` c
 Arvore* cria();
 ```
+
 Único método externo usado fora da estrutura, definido como contrutor da arvore, onde é alocado espaço na memória para a estrutura `Arvore*` e inicializado os atributos da estrutura.
 
 ``` c
@@ -97,6 +98,7 @@ Arvore* cria(){
 
 }
 ```
+
 os metodos atribuidos na estrutura **devem** ser declarados antes da função `cria()`.
 
 ---
@@ -107,19 +109,30 @@ retorna o maior valor entre dois inteiros
 
 
 ``` c
- #define max(a,b) \
-   ({ __typeof__ (a) _a = (a); \
+/**
+ * @brief Função de verificação de maior valor
+ * @param a valor a ser verificado
+ * @param b valor a ser verificado
+ */
+#define max(a, b) \
+    ({ __typeof__ (a) _a = (a); \
        __typeof__ (b) _b = (b); \
      _a > _b ? _a : _b; })
+
 
 ```
 
 ---
 
-retorna a altura de um nó
+Retorna a profundidade do nó mais abaixo em relação ao nó passado como parâmetro
 
 ``` c
- int height(No *root) {
+/**
+ * @brief Retorna a profundidade do nó mais abaixo em relação ao nó passado como parâmetro
+ * @param root nó raiz
+ */
+int height(No *root)
+{
     if (root == NULL)
         return 0;
     return max(height(root->esq), height(root->dir)) + 1;
@@ -131,7 +144,13 @@ retorna a altura de um nó
 retorna o numero de colunas para a matriz de impressão
 
 ``` c
-     int getcol(int h) {
+/**
+ * @brief Método de calculo do número de colunas na matriz
+ * para impressão da arvore
+ * @param h altura da arvore
+*/
+int getcol(int h)
+{
     if (h == 1)
         return 1;
     return getcol(h - 1) + getcol(h - 1) + 1;
@@ -143,7 +162,15 @@ retorna o numero de colunas para a matriz de impressão
 imprime a arvore em forma de matriz adaptado de um código em C++ do [geeksforgeeks](https://www.geeksforgeeks.org/print-binary-tree-2-dimensions/)
 
 ``` c
-void internalPrint(int **M, No *root, int col, int row, int height) {
+ * @brief Percurso recursivo de preenchimento da matriz pelos elementos da arvore
+ * @param M endereço da matriz a ser preenchida
+ * @param root nó atual/raiz da arvore
+ * @param col indice da coluna a ser preenchida
+ * @param row indice da linha a ser preenchida
+ * @param height altura do nó atual
+ */
+void internalPrint(int **M, No *root, int col, int row, int height)
+{
     if (root == NULL)
         return;
     M[row][col] = root->info;
@@ -151,22 +178,200 @@ void internalPrint(int **M, No *root, int col, int row, int height) {
     internalPrint(M, root->dir, col + pow(2, height - 2), row + 1, height - 1);
 }
 
-void TreePrinter(No* tree) {
-     int h = height(tree);
+/**
+ * @brief Impressão por método de matriz da arvore
+ * @param tree Nó raiz da arvore a ser impressa
+ */
+void TreePrinter(No *tree)
+{
+    int h = height(tree);
     int col = getcol(h);
-    int **M = (int **) calloc(h, sizeof(int *));
-    for (int i = 0; i < h; i++) {
-        M[i] = (int *) calloc(col, sizeof(int));//new int[col];
+    // aloca o vetor de ponteiros para vetores
+    int **M = (int **)calloc(h, sizeof(int *));
+
+    //preenche o vetor(matriz) com vetores dinamicamente alocados
+    for (int i = 0; i < h; i++)
+    {
+        M[i] = (int *)calloc(col, sizeof(int)); // new int[col];
     }
+    //preenche a matrix com os valores da arvore
     internalPrint(M, tree, col / 2, 0, h);
-    for (int i = 0; i < h; i++) {
-        for (int j = 0; j < col; j++) {
+
+    // percore a matriz imprimindo os valores
+    for (int i = 0; i < h; i++)
+    {
+        for (int j = 0; j < col; j++)
+        {
             if (M[i][j] == 0)
                 printf("  ");
             else
-                printf("%d ", M[i][j]);//cout << M[i][j] << " ";
+                printf("%d ", M[i][j]); // cout << M[i][j] << " ";
         }
-        printf("\n");//cout << endl;
+        printf("\n"); // cout << endl;
     }
+    free(M);
+}
+```
+
+---
+
+busca um elemento da arvore e retorna se ele existe na arvore ou não, e retorna o nó encontrado pelo endereço de referência
+
+```c
+/**
+ * @brief Faz uma busca binária pelos nós da arvore e retorna o resultado da busca
+ * @param root Nó raiz por onde se inicia a busca
+ * @param info Conteúdo a ser buscado
+ * @param resultado endereço de referência para cópia de resultado de busca
+ */
+bool _buscaInterno(No *root, int info, No **result)
+{
+    if (root == NULL)
+        return false;
+
+    if (info == root->info)
+    {
+        *result = root;
+        return true;
+    }
+    else
+    {
+        return _buscaInterno(info < root->info ? root->esq : root->dir, info, result);
+    }
+}
+
+/**
+ * @brief Realiza uma busca na arvore e retorna se o elemento existe ou não (true/false)
+ * e pode retornaro Nó resultado pela varíavel
+ * @param arv Referencia da arvore onde será realizada a busca
+ * @param info Conteúdo a ser buscado
+ * @param resultado endereço de referência para cópia de resultado de busca
+ */
+bool busca(Arvore *arv, int info, No **resultado)
+{
+    if (arv == NULL)
+    {
+        resultado = NULL;
+        return false;
+    }
+    else
+    {
+        if (arv->_raiz != NULL)
+        {
+            *resultado = (No *)malloc(sizeof(No));
+            return _buscaInterno(arv->_raiz, info, resultado);
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+```
+
+---
+
+verifica se um nó não tem os dois filhos o que o caracteriza como um nó folha
+
+```c
+/**
+ * @brief Verifica se um nó é uma folha ( tem ambos os filhos Nulos)
+ * @param node Nó a ser verificado
+ */
+bool ehFolha(No *node)
+{
+    return node->esq == NULL && node->dir == NULL;
+}
+```
+
+---
+
+busca e retorna o maior elemento da subarvore esquerda
+ou antecessor do nó passado como parâmetro
+
+```c
+
+/**
+ * @brief Busca o maior elemento da sub-arvore da esquerda de um nó
+ * @param root nó pai a ser substituído pelo antecessor
+ * @param esq nó filho a esquerda de `root` a ser removido e copiado
+ */
+void antecessor(No *root, No **esq)
+{
+    No *aux;
+    if ((*esq)->dir != NULL)
+    {
+        antecessor(root, &(*esq)->dir);
+        return;
+    }
+    root->info = (*esq)->info;
+    aux = *esq;
+    *esq = (*esq)->esq;
+    free(aux);
+}
+
+
+```
+
+---
+
+Remove um nó da arvore de forma recursiva passando pelos tres casos possiveis de remoção
+
+- nó folha
+- nó com um filho
+- nó com dois filhos
+
+```c
+/**
+ * @brief Método para remoção recursiva de um nó com a informação desejada
+ * @param root Referencia do nó raiz ou nó interno a ser removido
+ * @param info Informação contida no nó que deseja remover
+ */
+No *_remove(No *root, int info)
+{
+    if (root == NULL)
+    {
+        return NULL;
+    }
+
+    else
+    {
+        if (info < root->info)
+        {
+            root->esq = _remove(root->esq, info);
+        }
+        else if (info > root->info)
+        {
+            root->dir = _remove(root->dir, info);
+        }
+
+        // substituicao
+
+        if (root->dir == NULL && root->esq != NULL)
+        {
+            root = root->esq;
+        }
+        if (root->dir != NULL && root->esq != NULL)
+        {
+            antecessor(root, &root->esq);
+        }
+        if (root->esq == NULL && root->dir != NULL)
+        {
+            root = root->dir;
+        }
+    }
+
+    return root;
+}
+
+/**
+ * @brief Encapsulamento da remoção de nó da arvore
+ * @param arv referencia da arvore que terá a raiz alterada
+ * @param info cópia do id do nó que deve ser removido
+ */
+void removeNode(Arvore *arv, int info)
+{
+    arv->_raiz = _remove(arv->_raiz, info);
 }
 ```
